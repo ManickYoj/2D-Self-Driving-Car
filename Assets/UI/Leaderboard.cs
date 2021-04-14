@@ -8,8 +8,8 @@ public class Leaderboard : MonoBehaviour {
   public Transform rowContainer;
 
   [SerializeField]
-  private GameObject leaderboardRowPrefab;
-  private LeaderboardRow[] leaderboardRows;
+  private GameObject leaderboardRowPrefab = null;
+  private LeaderboardRow[] leaderboardRows = null;
 
   void OnGUI() {
     if (this.target == null) return;

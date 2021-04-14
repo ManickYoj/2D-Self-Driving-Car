@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class MultiplexActuator : Actuator {
   [SerializeField]
-  private Actuator[] positiveOutputs;
+  private Actuator[] positiveOutputs = null;
 
   [SerializeField]
-  private Actuator[] negativeOutputs;
+  private Actuator[] negativeOutputs = null;
 
   public override void Set(float input) {
     // Map -1 to 0 inputs as 0. Apply the 0 to 1 result to

@@ -7,15 +7,15 @@ public class LeaderboardRow : MonoBehaviour {
   public FitnessEvaluator target;
 
   [SerializeField]
-  View lifespanView;
+  View lifespanView = null;
   [SerializeField]
-  View distanceView;
+  View distanceView = null;
   [SerializeField]
-  View speedView;
+  View speedView = null;
   [SerializeField]
-  View fitnessView;
+  View fitnessView = null;
   [SerializeField]
-  GameObject crashPanel;
+  GameObject crashPanel = null;
 
   // Update is called once per frame
   void OnGUI() {

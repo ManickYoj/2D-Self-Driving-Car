@@ -1324,10 +1324,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4824e24b257a33343a79245b76cc1fe2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  carsPerGeneration: 100
-  mutationRate: 0.05
+  carsPerGeneration: 200
+  mutationRate: 0.04
   spawnPoints:
-  - {fileID: 298644146}
+  - {fileID: 18083494}
   carPrefab: {fileID: 8083813887359408217, guid: 9de787222abe0df418765c1b6ea49571,
     type: 3}
   track: {fileID: 548045473}

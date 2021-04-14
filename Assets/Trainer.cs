@@ -15,7 +15,7 @@ public class Trainer : MonoBehaviour {
   // [SerializeField]
   float mutationMagnitude = 1f;
   [SerializeField]
-  Transform[] spawnPoints;
+  Transform[] spawnPoints= null;
 
   public Guid guid;
   float averageFitness = 0;
@@ -40,11 +40,11 @@ public class Trainer : MonoBehaviour {
     Reset();
   }
 
-  // void Update() {
-  //   // if (Array.TrueForAll(fitnessEvaluators, fitnessEvaluator => fitnessEvaluator.crashed)) {
-  //   //   Reset();
-  //   // }
-  // }
+  void Update() {
+    if (Array.TrueForAll(fitnessEvaluators, fitnessEvaluator => fitnessEvaluator.crashed)) {
+      Reset();
+    }
+  }
 
   public void Reset() {
     this.startTime = Time.time;
@@ -69,41 +69,41 @@ public class Trainer : MonoBehaviour {
         fitnessEvaluators[i].track = track;
       }
     }
-    // else {
-    //   Chromosome[] babies = MakeBabies(networks, fitnessEvaluators);
+    else {
+      Chromosome[] babies = MakeBabies(networks, fitnessEvaluators);
 
-    //   for(int i = 0; i < cars.Length; i++) {
-    //     networks[i].Decode(babies[i].data);
+      for(int i = 0; i < cars.Length; i++) {
+        networks[i].Decode(babies[i].data);
 
-    //     Transform spawnPoint = RandomSpawn();
-    //     cars[i].transform.position = spawnPoint.position;
-    //     cars[i].transform.rotation = spawnPoint.rotation;
+        Transform spawnPoint = RandomSpawn();
+        cars[i].transform.position = spawnPoint.position;
+        cars[i].transform.rotation = spawnPoint.rotation;
 
-    //     fitnessEvaluators[i].Reset();
-    //   }
+        fitnessEvaluators[i].Reset();
+      }
 
-    //   Chromosome[] chromosomes = new Chromosome[networks.Length];
+      Chromosome[] chromosomes = new Chromosome[networks.Length];
 
-    //   for(int i=0; i< networks.Length; i++) {
-    //     chromosomes[i] = new Chromosome(networks[i].Encode());
-    //   }
+      for(int i=0; i< networks.Length; i++) {
+        chromosomes[i] = new Chromosome(networks[i].Encode());
+      }
 
-    //   Generation g = new Generation(
-    //     guid.ToString(),
-    //     generation,
-    //     chromosomes,
-    //     this.averageFitness,
-    //     this.bestFitness
-    //   );
-    //   g.Save();
+      Generation g = new Generation(
+        guid.ToString(),
+        generation,
+        chromosomes,
+        this.averageFitness,
+        this.bestFitness
+      );
+      g.Save();
 
-    //   Debug.Log("Generation " + generation + " complete.");
-    //   Debug.Log("Best fitness: " + this.bestFitness);
-    //   Debug.Log("Avg fitness: " + this.averageFitness);
-    //   Debug.Log("-------------------------");
+      Debug.Log("Generation " + generation + " complete.");
+      Debug.Log("Best fitness: " + this.bestFitness);
+      Debug.Log("Avg fitness: " + this.averageFitness);
+      Debug.Log("-------------------------");
 
-    //   this.generation++;
-    // }
+      this.generation++;
+    }
   }
 
   Transform RandomSpawn() {
@@ -117,7 +117,7 @@ public class Trainer : MonoBehaviour {
     this.bestFitness = 0;
 
     // Create and populate a random weighted distribution for parent selection
-    RandomWeighted<Network> parents = new RandomWeighted<Network>(networks.Length);
+    RandomWeighted<Network> parents = new RandomWeightedExp<Network>(networks.Length);
     for(int i = 0; i < networks.Length; i++) {
       float fitness = fitnessEvaluators[i].Evaluate();
       totalFitness += fitness;
@@ -130,7 +130,8 @@ public class Trainer : MonoBehaviour {
     for(int childNo = 0; childNo < networks.Length; childNo++) {
 
       // Step 1: Find parents
-      Network mother = parents.Get();
+      // The child always inherits half from the car that spawns it
+      Network mother = networks[childNo];
       Network father = parents.Get();
 
       // Step 2: Combine Parent DNA

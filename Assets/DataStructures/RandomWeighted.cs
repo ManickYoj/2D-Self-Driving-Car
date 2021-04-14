@@ -6,15 +6,15 @@ using System.Linq;
 using UnityEngine;
 
 public class RandomWeighted<T> {
-  KeyValuePair<double, T>[] itemArr;
-  int head = 0;
-  double cumSum = 0;
+  protected KeyValuePair<double, T>[] itemArr;
+  protected int head = 0;
+  protected double cumSum = 0;
 
   public RandomWeighted(int size) {
     itemArr = new KeyValuePair<double, T>[size];
   }
 
-  public void Add(T item, double weight) {
+  public virtual void Add(T item, double weight) {
     cumSum += weight;
     itemArr[head++] = new KeyValuePair<double, T>(cumSum, item);
   }
@@ -31,5 +31,17 @@ public class RandomWeighted<T> {
     }
 
     throw new NotEnoughDataException();
+  }
+}
+
+public class RandomWeightedExp<T> : RandomWeighted <T> {
+  protected double exponent;
+
+  public RandomWeightedExp (int size, double exponent = 2) : base(size){
+    this.exponent = exponent;
+  }
+
+  public override void Add(T item, double weight) {
+    base.Add(item, Math.Pow(weight, this.exponent));
   }
 }

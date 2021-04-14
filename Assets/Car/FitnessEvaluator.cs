@@ -107,7 +107,8 @@ public class FitnessEvaluator : MonoBehaviour {
         if (RollingAvgSpeed() < this.minSpeedLimit) {
           Crash();
         }
-      } catch (NotEnoughDataException e) {}
+      } catch (NotEnoughDataException e) {
+      }
     }
   }
 
@@ -117,7 +118,7 @@ public class FitnessEvaluator : MonoBehaviour {
     fitnessAtCrash = Evaluate();
     crashTime = Time.time;
     crashed = true;
-    Reincarnate();
+    // Reincarnate();
   }
 
   public void Reincarnate() {

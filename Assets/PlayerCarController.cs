@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class PlayerCarController : MonoBehaviour {
   [SerializeField]
-  Actuator yAxisActuator;
+  Actuator yAxisActuator = null;
 
   [SerializeField]
-  Actuator xAxisActuator;
+  Actuator xAxisActuator = null;
 
   [SerializeField]
-  Actuator turnActuator;
+  Actuator turnActuator = null;
 
   void Update() {
     yAxisActuator.Set(Input.GetAxis("Vertical"));
