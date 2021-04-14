@@ -24,7 +24,6 @@ public class RandomWeighted<T> {
     float selector = UnityEngine.Random.Range(0, (float) cumSum);
 
     for(int i = 0; i < head; i++) {
-
       if (itemArr[i].Key > selector) {
         return itemArr[i].Value;
       }

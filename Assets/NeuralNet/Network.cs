@@ -25,6 +25,7 @@ public class Network : MonoBehaviour, IEncodable, IDecodable {
 
   void Start() {
     this.Setup();
+    // Debug.Log(String.Join(",", this.Encode()));
   }
 
   void Update() {
@@ -90,13 +91,28 @@ public class Network : MonoBehaviour, IEncodable, IDecodable {
   private static float[] encodedNetwork;
 
   public float[] Encode() {
-    int hiddenNeuronsPerLayer = hiddenLayers[0].Length;
+    int hiddenNeuronsPerLayer;
+    int outputSynapseCount;
+    int hiddenLayerNeuronCount;
+    int hiddenSynapseCount;
+    int inputSynapseCount;
+
+    if (hiddenLayers.Length == 0) {
+      hiddenNeuronsPerLayer = 0;
+      outputSynapseCount = outputLayer.Length * inputs.Length;
+      hiddenLayerNeuronCount = 0;
+      hiddenSynapseCount = 0;
+      inputSynapseCount = 0; // Same as output Synapses
+    } else {
+      hiddenNeuronsPerLayer = hiddenLayers[0].Length;
+      outputSynapseCount = outputLayer.Length * hiddenNeuronsPerLayer;
+      hiddenLayerNeuronCount = hiddenLayerCount * hiddenNeuronsPerLayer;
+      hiddenSynapseCount = (hiddenLayerCount - 1) * hiddenNeuronsPerLayer * hiddenNeuronsPerLayer;
+      inputSynapseCount = inputs.Length * hiddenNeuronsPerLayer;
+    }
 
     int outputNeuronCount = outputLayer.Length;
-    int outputSynapseCount = outputLayer.Length * hiddenNeuronsPerLayer;
-    int hiddenLayerNeuronCount = hiddenLayerCount * hiddenNeuronsPerLayer;
-    int hiddenSynapseCount = (hiddenLayerCount - 1) * hiddenNeuronsPerLayer * hiddenNeuronsPerLayer;
-    int inputSynapseCount = inputs.Length * hiddenNeuronsPerLayer;
+
 
     int totalGeneCount = (
       outputNeuronCount +
@@ -129,7 +145,12 @@ public class Network : MonoBehaviour, IEncodable, IDecodable {
       }
     }
 
-    return Network.encodedNetwork;
+    // Arrays are referenced. If we use the static copy, all returned values
+    // will reference the last in-memory run. Copy instead, but be aware this
+    // takes lots of memory
+    float[] returnCopy = new float[totalGeneCount];
+    Array.Copy(Network.encodedNetwork, returnCopy, totalGeneCount);
+    return returnCopy;
   }
 
   public void Decode(float[] data) {

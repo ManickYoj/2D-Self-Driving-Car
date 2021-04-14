@@ -12,7 +12,7 @@ public class Trainer : MonoBehaviour {
   // int survivorsPerGeneration = 10;
   [SerializeField]
   float mutationRate = 0.1f;
-  // [SerializeField]
+  [SerializeField]
   float mutationMagnitude = 1f;
   [SerializeField]
   Transform[] spawnPoints= null;
@@ -24,6 +24,9 @@ public class Trainer : MonoBehaviour {
 
   float startTime;
   int generation = 0;
+
+  [SerializeField]
+  bool randomMother = true;
 
   [SerializeField]
   GameObject carPrefab = null;
@@ -117,12 +120,13 @@ public class Trainer : MonoBehaviour {
     this.bestFitness = 0;
 
     // Create and populate a random weighted distribution for parent selection
-    RandomWeighted<Network> parents = new RandomWeightedExp<Network>(networks.Length);
+    RandomWeighted<Chromosome> parents = new RandomWeighted<Chromosome>(networks.Length);
     for(int i = 0; i < networks.Length; i++) {
       float fitness = fitnessEvaluators[i].Evaluate();
       totalFitness += fitness;
       if (fitness > this.bestFitness) this.bestFitness = fitness;
-      parents.Add(networks[i], (double) fitness);
+      // Debug.Log(String.Join(",", networks[i].Encode()));
+      parents.Add(new Chromosome(networks[i]), (double) fitness);
     }
 
     this.averageFitness = totalFitness / networks.Length;
@@ -130,15 +134,20 @@ public class Trainer : MonoBehaviour {
     for(int childNo = 0; childNo < networks.Length; childNo++) {
 
       // Step 1: Find parents
-      // The child always inherits half from the car that spawns it
-      Network mother = networks[childNo];
-      Network father = parents.Get();
+      Chromosome mother;
+      // Unfit mothers don't survive to have kids - instead pick a kid from the
+      // Random gene pool
+      if (this.randomMother || fitnessEvaluators[childNo].Evaluate() * 2 < this.bestFitness) {
+        // Both parents are randomly selected according to fitness
+         mother = parents.Get();
+      } else {
+        // The child always inherits at least in part from the car that spawns it
+        mother = new Chromosome(networks[childNo]);
+      }
+      Chromosome father = parents.Get();
 
       // Step 2: Combine Parent DNA
-      children[childNo] = Chromosome.Combine(
-        new Chromosome(mother),
-        new Chromosome(father)
-      );
+      children[childNo] = Chromosome.Combine(mother, father);
 
       // Step 3: Introduce mutations
       children[childNo].Mutate(this.mutationRate, this.mutationMagnitude);
@@ -211,19 +220,36 @@ public class Chromosome {
 
   public Chromosome(IEncodable encodable) {
     this.data = encodable.Encode();
+    this.id = System.Guid.NewGuid().ToString();
   }
 
   public Chromosome(float[] data) {
     this.data = data;
+    this.id = System.Guid.NewGuid().ToString();
+  }
+
+  public override String ToString() {
+    return "Chromo ID: " + this.id + " Data: [ " + String.Join(",", this.data) + "]";
   }
 
   public static Chromosome Combine(Chromosome first, Chromosome second) {
     float[][] zippedChromosomes = new float[][] {first.data, second.data};
     float[] newChromosomeData = new float[first.data.Length];
 
+
     for(int i = 0; i < first.data.Length; i++) {
       int selection = UnityEngine.Random.Range(0, 2); // Returns 0 or 1
       newChromosomeData[i] = zippedChromosomes[selection][i];
+      // Debug.Log("---");
+      // Debug.Log("Chromo 1 ID: " + first.id);
+      // Debug.Log("Chromo 2 ID: " + second.id);
+      // Debug.Log("Chromo 1 Val: " + first.data[i]);
+      // Debug.Log("Chromo 2 Val: " + second.data[i]);
+      // Debug.Log("Chromo 1 Val (ZIP): " + zippedChromosomes[0][i]);
+      // Debug.Log("Chromo 2 Val (ZIP): " + zippedChromosomes[1][i]);
+      // Debug.Log("Selector: " + selection);
+      // Debug.Log("New Val: " + newChromosomeData[i]);
+      // Debug.Log("---");
     }
 
     return new Chromosome(newChromosomeData);

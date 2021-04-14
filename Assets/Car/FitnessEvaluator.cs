@@ -34,8 +34,8 @@ public class FitnessEvaluator : MonoBehaviour {
   [SerializeField]
   public Network network;
 
-  public float mutationChance = 0.1f;
-  public float mutationMagnitue = 1f;
+  // public float mutationChance = 0.1f;
+  // public float mutationMagnitude = 1f;
 
   private static KeyValuePair<float, Chromosome> fittest;
   private static KeyValuePair<float, Chromosome> lastFittest;
@@ -121,17 +121,17 @@ public class FitnessEvaluator : MonoBehaviour {
     // Reincarnate();
   }
 
-  public void Reincarnate() {
-    Chromosome child = Chromosome.Combine(
-      FitnessEvaluator.lastFittest.Value,
-      FitnessEvaluator.fittest.Value
-    );
+  // public void Reincarnate() {
+  //   Chromosome child = Chromosome.Combine(
+  //     FitnessEvaluator.lastFittest.Value,
+  //     FitnessEvaluator.fittest.Value
+  //   );
 
-    child.Mutate(this.mutationChance, this.mutationMagnitue);
+  //   child.Mutate(this.mutationChance, this.mutationMagnitude);
 
-    this.network.Decode(child.data);
-    this.Reset();
-  }
+  //   this.network.Decode(child.data);
+  //   this.Reset();
+  // }
 
   public float Lifespan() {
     if (!crashed) {
@@ -160,7 +160,7 @@ public class FitnessEvaluator : MonoBehaviour {
 
   public float Evaluate() {
     if (!crashed) {
-      float fitness = ForwardDistance() * ForwardDistance();
+      float fitness = ForwardDistance(); //Mathf.Pow(ForwardDistance(), 3);
       //  * Mathf.Sqrt(1 + AverageSpeed())
 
       if (FitnessEvaluator.fittest.Equals(default(KeyValuePair<float, Chromosome>))) {

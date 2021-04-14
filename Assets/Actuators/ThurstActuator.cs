@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ThurstActuator : Actuator {
   public float maxThrust = 10f;
-  float throttle = 0f;
+  float throttle = .75f;
 
   private Rigidbody2D rbody;
 
