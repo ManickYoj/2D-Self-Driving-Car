@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class RefreshFileListing : MonoBehaviour {
   public GameObject targetView;
   public Trainer trainer;
+  public GameObject objToDeactivateOnLoad;
 
   public FileRow rowPrefab;
   private List<FileRow> rows;
@@ -49,6 +50,7 @@ public class RefreshFileListing : MonoBehaviour {
       for(int i = rows.Count; i < rowsNeeded; i++) {
         FileRow newRow = Instantiate(rowPrefab, targetView.transform).GetComponent<FileRow>();
         newRow.loadFileMethod = trainer.LoadFile;
+        newRow.closeFileDelegate = delegate() { objToDeactivateOnLoad.SetActive(false); };
         rows.Add(newRow);
       }
 

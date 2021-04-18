@@ -1273,5 +1273,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetView: {fileID: 8841035069548056794}
   trainer: {fileID: 0}
+  objToDeactivateOnLoad: {fileID: 8841035068372016792}
   rowPrefab: {fileID: -2557849427675005521, guid: 808fb1de28dfccf49a9425d1d17dc7ee,
     type: 3}
