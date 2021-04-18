@@ -13,8 +13,7 @@ public class SteeringActuator : Actuator {
   }
 
   void FixedUpdate() {
-    // float forwardVel = transform.InverseTransformDirection(rbody.velocity).y;
-    rbody.rotation += curSteer;
+    rbody.AddTorque(curSteer * Time.fixedDeltaTime);
   }
 
   public override void Set(float val) {

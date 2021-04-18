@@ -74,27 +74,17 @@ public class Trainer : MonoBehaviour {
     }
     else {
       Chromosome[] babies = MakeBabies(networks, fitnessEvaluators);
+      SetupGeneration(babies);
+      // Chromosome[] chromosomes = new Chromosome[networks.Length];
 
-      for(int i = 0; i < cars.Length; i++) {
-        networks[i].Decode(babies[i].data);
-
-        Transform spawnPoint = RandomSpawn();
-        cars[i].transform.position = spawnPoint.position;
-        cars[i].transform.rotation = spawnPoint.rotation;
-
-        fitnessEvaluators[i].Reset();
-      }
-
-      Chromosome[] chromosomes = new Chromosome[networks.Length];
-
-      for(int i=0; i< networks.Length; i++) {
-        chromosomes[i] = new Chromosome(networks[i].Encode());
-      }
+      // for(int i=0; i< networks.Length; i++) {
+      //   chromosomes[i] = new Chromosome(networks[i].Encode());
+      // }
 
       Generation g = new Generation(
         guid.ToString(),
         generation,
-        chromosomes,
+        babies,
         this.averageFitness,
         this.bestFitness
       );
@@ -107,6 +97,26 @@ public class Trainer : MonoBehaviour {
 
       this.generation++;
     }
+  }
+
+  private void SetupGeneration(Generation g) {
+    SetupGeneration(g.chromosomes);
+  }
+
+  private void SetupGeneration(Chromosome[] chromosomes) {
+    for(int i = 0; i < cars.Length; i++) {
+      networks[i].Decode(chromosomes[i].data);
+
+      Transform spawnPoint = RandomSpawn();
+      cars[i].transform.position = spawnPoint.position;
+      cars[i].transform.rotation = spawnPoint.rotation;
+
+      fitnessEvaluators[i].Reset();
+    }
+  }
+
+  public void LoadFile(string filepath) {
+    SetupGeneration(Generation.Load(filepath));
   }
 
   Transform RandomSpawn() {
@@ -171,7 +181,7 @@ public class Generation {
   float bestFitness;
 
   [SerializeField]
-  Chromosome[] chromosomes;
+  public Chromosome[] chromosomes;
 
   public Generation(
     string runId,
@@ -198,7 +208,7 @@ public class Generation {
     FileUtility.SaveJsonString(filename, json);
   }
 
-  public static Generation Load(String filename) {
+  public static Generation Load(string filename) {
     string json = FileUtility.LoadJsonString(filename);
     return JsonUtility.FromJson<Generation>(json);
   }
@@ -278,11 +288,10 @@ public static class FileUtility {
     Debug.Log("Saved data to " + destination);
   }
 
-  public static string LoadJsonString(string filename) {
-    string destination = Path.Combine(Application.persistentDataPath, filename + ".json");
+  public static string LoadJsonString(string filepath) {
     string json;
 
-    using (StreamReader r = new StreamReader(destination)) {
+    using (StreamReader r = new StreamReader(filepath)) {
       json = r.ReadToEnd();
     }
 
